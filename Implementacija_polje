@@ -1,0 +1,32 @@
+struct qu{
+		klijent_podaci polje[2000];
+		int front, rear;
+};
+
+typedef int element;
+typedef qu red;
+
+int AddOne(int n){
+	return (n+1)%2000;
+}
+
+klijent_podaci frontq(red *Q){
+	return Q->polje[Q->front];
+}
+void enqueueq(klijent_podaci x, red*Q){
+	Q->rear = AddOne(Q->rear);
+	Q->polje[Q->rear] = x;
+}
+void dequeueq(red *Q){
+	Q->front = AddOne(Q->front);
+}
+void initq(red * Q){
+	Q->front = 0;
+	Q->rear = 1999;
+}
+bool isemptyq(red *Q){
+	if(AddOne(Q->rear)==Q->front)
+		return 1;
+	else
+		return 0;
+}
