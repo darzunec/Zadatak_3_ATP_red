@@ -1,0 +1,35 @@
+struct qu{
+		klijent_podaci k;
+		qu *sljedeci;
+};
+struct que {
+	qu *front, *rear;
+};
+
+typedef qu element;
+typedef que red;
+
+klijent_podaci frontq(red *Q){
+	return Q->front->sljedeci->k;
+}
+void enqueueq(klijent_podaci x, red* Q){
+	Q->rear->sljedeci = new element;
+	Q->rear = Q->rear->sljedeci ;
+	Q->rear->sljedeci = NULL;
+	Q->rear->k = x;
+}
+void dequeueq(red *Q){
+	element *pom = Q->front;
+	Q->front = pom->sljedeci;
+	delete pom;
+}
+void initq(red * Q){
+	Q->front = new element;
+	Q->rear = Q->front;
+}
+bool isemptyq(red *Q){
+	if(Q->rear==Q->front)
+		return 1;
+	else
+		return 0;
+}
