@@ -1,0 +1,301 @@
+#include <iostream>
+#include <cstring>
+#include <ctime>
+#include <cstdlib>
+
+using namespace std;
+
+struct cetvorka {
+	int a, b, c, d;
+};
+
+struct klijent_podaci {
+	char ime[25];
+	char prezime[25];
+	int d, m, g;
+	char spol;
+	cetvorka cet;
+};
+
+//#include "redpokazivac.h"
+#include "redpolje.h"
+
+char dalje;
+
+cetvorka* fun_a(int& n) {
+	cout << "broj cetvorki: ";
+	cin >> n;
+	cetvorka* abc = new cetvorka[n];
+	for(int i=0; i<n; i++) {
+		abc[i].a = 10 + rand()%491;
+		abc[i].b = 80 + rand()%721;
+		abc[i].c = 1 + rand()%5;
+		abc[i].d = 1 + rand()%5;
+	}
+	return abc;
+}
+
+void sortiraj_red_po_prioritetu(red* Q) {
+	red* pomocni[5];
+	for(int i=0; i<5; i++) {
+		pomocni[i] = new red;
+		initq(pomocni[i]);
+	}
+	
+	while(!isemptyq(Q) ) {
+		klijent_podaci kp = frontq(Q);
+		dequeueq(Q);
+		enqueueq(kp, pomocni[kp.cet.c-1]);
+	}
+	
+	for(int i=0; i<5; i++) {
+		while(!isemptyq(pomocni[i]) ) {
+			klijent_podaci kp = frontq(pomocni[i]);
+			dequeueq(pomocni[i]);
+			enqueueq(kp, Q);
+		}
+	}
+	for(int i=0; i<5; i++)
+		delete pomocni[i];
+}
+
+void ispisi_red(red* Q) {
+	red* pomocni = new red;
+	initq(pomocni);
+	
+	cout << endl << endl;
+	cout << "Klijenti koji cekaju u redu: " << endl;
+	
+	while(!isemptyq(Q) ) {
+		klijent_podaci kp = frontq(Q);
+		dequeueq(Q);
+		enqueueq(kp, pomocni);
+		cout << "---------------" << endl;
+		cout << "ime: " << kp.ime << endl;
+		cout << "prezime: " << kp.prezime << endl;
+		cout << "datum rodjenja: " << kp.d << "." << kp.m << "." << kp.g << "." << endl;
+		cout << "spol: " << kp.spol << endl;
+		cout << "cetvorka (a, b, c, d): " << kp.cet.a << ", " << kp.cet.b << ", " << kp.cet.c << ", " << kp.cet.d << endl;
+	}
+	while(!isemptyq(pomocni) ) {
+		klijent_podaci kp = frontq(pomocni);
+		dequeueq(pomocni);
+		enqueueq(kp, Q);
+	}
+	delete pomocni;
+}
+
+void fun_b(red* Q, cetvorka* abc, int n) {
+	string imena_m[] = {"Marko", "Matija", "Nikola", "Renato", "Karlo", "Ivo", "Stef", "Tihomir", "Vjeran","Martin"};
+	int br_imena_m =  sizeof(imena_m)/sizeof(string);
+	string imena_z[] = {"Tajana", "Nikolina", "Tea"};
+	int br_imena_z =  sizeof(imena_z)/sizeof(string);
+	string prezimena[] = {"Mlinarek", "Puncec", "Sargac", "Miklecic", "Orehovacki", "Vidovic", "Zelenika", "Zupan", "Hublin", "Horvat", "Ricko","Sabolic"};
+	int br_prezimena =  sizeof(prezimena)/sizeof(string);
+	
+	for(int i=0; i<n; i++) {
+		for(int j=0; j<5; j++) {
+			klijent_podaci kp;
+			
+			kp.spol = (rand()%2 ? 'z' : 'm');
+			
+			if(kp.spol == 'm')
+				strcpy(kp.ime, imena_m[rand()%br_imena_m].c_str() );
+			else
+				strcpy(kp.ime, imena_z[rand()%br_imena_z].c_str() );
+			strcpy(kp.prezime, prezimena[rand()%br_prezimena].c_str() );
+			
+			kp.d = 1+rand()%31;
+			kp.m = 1+rand()%12;
+			kp.g = 1910+rand()%100;
+			
+			kp.cet = abc[i];
+			
+			cout << "---------------" << endl;
+			cout << "ime: " << kp.ime << endl;
+			cout << "prezime: " << kp.prezime << endl;
+			cout << "datum rodjenja: " << kp.d << "." << kp.m << "." << kp.g << "." << endl;
+			cout << "spol: " << kp.spol << endl;
+			cout << "cetvorka (a, b, c, d): " << kp.cet.a << ", " << kp.cet.b << ", " << kp.cet.c << ", " << kp.cet.d << endl;
+			
+			enqueueq(kp, Q);
+		}
+	}
+	
+	cout << "dalje (d/n)? "; cin >> dalje;
+	
+	sortiraj_red_po_prioritetu(Q);
+	
+	ispisi_red(Q);
+	
+	cout << "dalje (d/n)? "; cin >> dalje;
+	
+	cout << endl << endl;
+	cout << "klijenti koji su po horoskopu Jarac, mladji su od 40 godina i cekaju uplatu lutrije" << endl;
+	red* pomocni = new red;
+	initq(pomocni);
+	while(!isemptyq(Q) ) {
+		klijent_podaci kp = frontq(Q);
+		
+		if( ( (kp.m==12 && kp.d>=22) || (kp.m==1 && kp.d<=20) ) && kp.g>=1974 && kp.cet.d==3) {
+			cout << "---------------" << endl;
+			cout << "ime: " << kp.ime << endl;
+			cout << "prezime: " << kp.prezime << endl;
+			cout << "datum rodjenja: " << kp.d << "." << kp.m << "." << kp.g << "." << endl;
+			cout << "spol: " << kp.spol << endl;
+			cout << "cetvorka (a, b, c, d): " << kp.cet.a << ", " << kp.cet.b << ", " << kp.cet.c << ", " << kp.cet.d << endl;
+		}
+		
+		dequeueq(Q);
+		enqueueq(kp, pomocni);
+	}
+	while(!isemptyq(pomocni) ) {
+		klijent_podaci kp = frontq(pomocni);
+		dequeueq(pomocni);
+		enqueueq(kp, Q);
+	}
+	delete pomocni;
+	
+	cout << "dalje (d/n)? ";
+	cin >> dalje;
+}
+
+void trudnice_predugo_cekaju_evotv(red* Q) {
+	red* pomocni = new red;
+	initq(pomocni);
+	
+	cout << endl << endl;
+	cout << "Trudnice koje su cekale predugo na svoj evotv: " << endl;
+	
+	while(!isemptyq(Q) ) {
+		klijent_podaci kp = frontq(Q);
+		dequeueq(Q);
+		if(kp.cet.c == 3 && kp.cet.d == 5) {
+			cout << "---------------" << endl;
+			cout << "ime: " << kp.ime << endl;
+			cout << "prezime: " << kp.prezime << endl;
+			cout << "datum rodjenja: " << kp.d << "." << kp.m << "." << kp.g << "." << endl;
+			cout << "spol: " << kp.spol << endl;
+			cout << "cetvorka (a, b, c, d): " << kp.cet.a << ", " << kp.cet.b << ", " << kp.cet.c << ", " << kp.cet.d << endl;
+		} else
+			enqueueq(kp, pomocni);
+	}
+	while(!isemptyq(pomocni) ) {
+		klijent_podaci kp = frontq(pomocni);
+		dequeueq(pomocni);
+		enqueueq(kp, Q);
+	}
+	delete pomocni;
+}
+
+void fun_c(red* Q) {
+	trudnice_predugo_cekaju_evotv(Q);
+	
+	cout << "dalje (d/n)? ";
+	cin >> dalje;
+	
+	ispisi_red(Q);
+	
+	cout << "dalje (d/n)? ";
+	cin >> dalje;
+}
+
+void rekurzivno_prebaci_prva_dva_u_brzi(red* tekuci, red* brzi, int i=0) {
+	if(isemptyq(tekuci) ) return;
+	if(i>=2) return;
+	enqueueq(frontq(tekuci), brzi);
+	dequeueq(tekuci);
+	rekurzivno_prebaci_prva_dva_u_brzi(tekuci, brzi, i+1);
+}
+
+void sortiraj_red_obrnuto_razmjerno(red* Q) {
+	red* pomocni[5];
+	for(int i=0; i<5; i++) {
+		pomocni[i] = new red;
+		initq(pomocni[i]);
+	}
+	
+	while(!isemptyq(Q) ) {
+		klijent_podaci kp = frontq(Q);
+		dequeueq(Q);
+		enqueueq(kp, pomocni[kp.cet.c-1]);
+	}
+	
+	for(int i=4; i>=0; i--) {
+		while(!isemptyq(pomocni[i]) ) {
+			klijent_podaci kp = frontq(pomocni[i]);
+			dequeueq(pomocni[i]);
+			enqueueq(kp, Q);
+		}
+	}
+	for(int i=0; i<5; i++)
+		delete pomocni[i];
+}
+
+void fun_d(red* Q) {
+	red* pomocni[5];
+	for(int i=0; i<5; i++) {
+		pomocni[i] = new red;
+		initq(pomocni[i]);
+	}
+	red* brzi = new red;
+	initq(brzi);
+	
+	while(!isemptyq(Q) ) {
+		klijent_podaci kp = frontq(Q);
+		dequeueq(Q);
+		if(kp.cet.c == 4)
+			enqueueq(kp, brzi);
+		else
+			enqueueq(kp, pomocni[kp.cet.c-1]);
+	}
+	
+	for(int i=0; i<5; i++)
+		rekurzivno_prebaci_prva_dva_u_brzi(pomocni[i], brzi);
+	
+	for(int i=0; i<5; i++) {
+		cout << endl << endl;
+		cout << "salter broj " << i+1 << ": " << endl;
+		ispisi_red(pomocni[i]);
+		
+		cout << "dalje? ";
+		cin >> dalje;
+	}
+	
+	
+	sortiraj_red_obrnuto_razmjerno(brzi);
+	
+	cout << endl << endl;
+	cout << "brzi salter: " << endl;
+	ispisi_red(brzi);
+	
+	cout << "dalje? ";
+	cin >> dalje;
+	
+	for(int i=0; i<5; i++)
+		delete pomocni[i];
+	delete brzi;
+}
+
+int main () {
+	srand(time(0));
+	rand();
+	
+	int n;
+	cetvorka* klijenti = fun_a(n);
+	
+	cout << "dalje (d/n)? "; cin >> dalje;
+	
+	red* Q = new red;
+	initq(Q);
+	
+	fun_b(Q, klijenti, n);
+	
+	fun_c(Q);
+	
+	fun_d(Q);
+	
+	delete Q;
+	
+	return 0;
+}
